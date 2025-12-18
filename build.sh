@@ -138,7 +138,7 @@ function choices() {
             ;;
          *)
             if [ $(grep -c $VERSION arch/arm64/configs/$DEFCONFIG) -eq 0 ]; then
-                sed -i "s/-Meteoric/-Meteoric-$VERSION/" arch/arm64/configs/$DEFCONFIG
+                sed -i "s/-FixeQ/-FixeQ-$VERSION/" arch/arm64/configs/$DEFCONFIG
             fi
             ;;
     esac
@@ -154,9 +154,9 @@ function choices() {
     # Interrupt detected
     if [ $SIGINT_DETECT -eq 1 ]; then
         if [ $(grep -c "KSU" arch/arm64/configs/$DEFCONFIG) -ne 0 ]; then
-            sed -i "s/-Meteoric-$VERSION-KSU/-Meteoric/" arch/arm64/configs/$DEFCONFIG
+            sed -i "s/-FixeQ-$VERSION-KSU/-FixeQ/" arch/arm64/configs/$DEFCONFIG
         elif [ $(grep -c $VERSION arch/arm64/configs/$DEFCONFIG) -ne 0 ]; then
-            sed -i "s/-Meteoric-$VERSION/-Meteoric/" arch/arm64/configs/$DEFCONFIG
+            sed -i "s/-FixeQ-$VERSION/-FixeQ/" arch/arm64/configs/$DEFCONFIG
         fi
         exit
     fi
@@ -185,7 +185,7 @@ function compile() {
     if [ $ZIPNAME = Meteoric-KernelSU ]; then
         sed -i 's/CONFIG_KSU=y/# CONFIG_KSU is not set/g' out/.config
         sed -i '/CONFIG_KSU=y/d' out/defconfig
-        sed -i "s/-Meteoric-$VERSION-KSU/-Meteoric/" out/defconfig out/.config arch/arm64/configs/$DEFCONFIG
+        sed -i "s/-FixeQ-$VERSION-KSU/-FixeQ/" out/defconfig out/.config arch/arm64/configs/$DEFCONFIG
         
         if [ $(grep -c "# KernelSU" arch/arm64/configs/$DEFCONFIG) -eq 1 ]; then
             sed -i 's/CONFIG_KSU=y/# CONFIG_KSU is not set/g' arch/arm64/configs/$DEFCONFIG
@@ -193,7 +193,7 @@ function compile() {
             sed -i '/CONFIG_KSU=y/d' arch/arm64/configs/$DEFCONFIG
         fi
     else
-        sed -i "s/-Meteoric-$VERSION/-Meteoric/" out/defconfig out/.config arch/arm64/configs/$DEFCONFIG
+        sed -i "s/-FixeQ-$VERSION/-FixeQ/" out/defconfig out/.config arch/arm64/configs/$DEFCONFIG
     fi
 
     # Verify build
