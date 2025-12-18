@@ -666,7 +666,7 @@ jobs:
         with:
           name: ${{ env.FILE_NAME }}-Image
           path: |
-            Image
+            bootimgs/Image
           compression-level: 9
 
       - name: Upload Raw Image (GZ)
@@ -674,7 +674,7 @@ jobs:
         with:
           name: ${{ env.FILE_NAME }}-Image.gz
           path: |
-            Image.gz
+            bootimgs/Image.gz
           compression-level: 9
 
       - name: Upload Raw Image (LZ4)
@@ -682,7 +682,7 @@ jobs:
         with:
           name: ${{ env.FILE_NAME }}-Image.lz4
           path: |
-            Image.lz4
+            bootimgs/Image.lz4
           compression-level: 9
 
       - name: Upload Build Diagnostics
