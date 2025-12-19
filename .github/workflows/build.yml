@@ -444,7 +444,7 @@ jobs:
           perl -pi -e 's/-dirty//' ./common/scripts/setlocalversion
           
           #Set Kernel Name for Nothing Phone Android 12 5.10 (make build)
-          perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FixeQ"/s' ./common/scripts/setlocalversion
+          #perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FixeQ"/s' ./common/scripts/setlocalversion
 
           #Set UTS_VERSION with the consistent build timestamp
           perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $BUILD_TIMESTAMP\"}" ./common/scripts/mkcompil[...]
