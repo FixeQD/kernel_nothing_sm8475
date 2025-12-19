@@ -447,8 +447,8 @@ jobs:
           #perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FixeQ"/s' ./common/scripts/setlocalversion
 
           #Set UTS_VERSION with the consistent build timestamp
-          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $BUILD_TIMESTAMP\"}" ./common/scripts/mkcompil[...]
-
+          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $BUILD_TIMESTAMP\"}" ./common/scripts/mkc[...]
+          
           #Set build-timestamp with the same consistent timestamp
           perl -pi -e "s/build-timestamp = \\\$\(or \\\$\(KBUILD_BUILD_TIMESTAMP\), \\\$\(build-timestamp-auto\)\)/build-timestamp = \"$BUILD_TIMESTAMP\"/" ./common/init/Makefile
 
@@ -531,6 +531,14 @@ jobs:
 
           echo "Total kernel modules found: $total_modules"
 
+      - name: Restore Build Output Cache
+        uses: actions/cache@v5.0.1
+        with:
+          path: ./$CONFIG/common/out
+          key: kernel-out-${{ hashFiles('**/build.yml') }}
+          restore-keys: |
+            kernel-out-
+
       - name: Build Kernel
         run: |
           KERNEL_PATH="$GITHUB_WORKSPACE/$CONFIG"
@@ -543,6 +551,14 @@ jobs:
           # Build the kernel
           make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2" vendor/meteoric_defconfig || exit 1
           make -j$(nproc --all) O=out $MAKE_ARGS KCFLAGS+="-Wno-error -O2" Image Image.gz Image.lz4 || exit 1
+
+      - name: Cache Build Output
+        uses: actions/cache@v5.0.1
+        with:
+          path: ./$CONFIG/common/out
+          key: kernel-out-${{ hashFiles('**/build.yml') }}
+          restore-keys: |
+            kernel-out-
 
       - name: Prepare AnyKernel3
         run: |
