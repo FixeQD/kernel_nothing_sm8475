@@ -68,41 +68,41 @@ function cloneTC() {
     case $COMPILER in
         proton)
             if [ $COMPILER_CLEANUP = true ]; then
-                rm -rf ~/meteoric/neutron-clang
+                rm -rf ~/toolchain/neutron-clang
             fi
-            if [ $(ls $HOME/meteoric/proton-clang 2>/dev/null | wc -l) -ne 0 ]; then
-                PATH="$HOME/meteoric/proton-clang/bin:$PATH"
+            if [ $(ls $HOME/toolchain/proton-clang 2>/dev/null | wc -l) -ne 0 ]; then
+                PATH="$HOME/toolchain/proton-clang/bin:$PATH"
             else
-                git clone --depth=1  https://github.com/kdrag0n/proton-clang.git ~/meteoric/proton-clang
-                PATH="$HOME/meteoric/proton-clang/bin:$PATH"
+                git clone --depth=1  https://github.com/kdrag0n/proton-clang.git ~/toolchain/proton-clang
+                PATH="$HOME/toolchain/proton-clang/bin:$PATH"
             fi
             ;;
         neutron)
             if [ $COMPILER_CLEANUP = true ]; then
-                rm -rf ~/meteoric/proton-clang
+                rm -rf ~/toolchain/proton-clang
             fi
-            if [ $(ls $HOME/meteoric/neutron-clang/bin 2>/dev/null | wc -l ) -ne 0 ] && 
-               [ $(find $HOME/meteoric/neutron-clang -name *.tar.zst | wc -l) -eq 0 ]; then
-                PATH="$HOME/meteoric/neutron-clang/bin:$PATH"
+            if [ $(ls $HOME/toolchain/neutron-clang/bin 2>/dev/null | wc -l ) -ne 0 ] &&
+               [ $(find $HOME/toolchain/neutron-clang -name *.tar.zst | wc -l) -eq 0 ]; then
+                PATH="$HOME/toolchain/neutron-clang/bin:$PATH"
             else
-                rm -rf ~/meteoric/neutron-clang
-                mkdir -p ~/meteoric/neutron-clang
-                cd ~/meteoric/neutron-clang || exit
+                rm -rf ~/toolchain/neutron-clang
+                mkdir -p ~/toolchain/neutron-clang
+                cd ~/toolchain/neutron-clang || exit
                 curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
                 chmod a+x antman
                 ./antman -S
                 cd - || exit
-                PATH="$HOME/meteoric/neutron-clang/bin:$PATH"
+                PATH="$HOME/toolchain/neutron-clang/bin:$PATH"
             fi
             ;;
     esac
 }
-	
+
 ##------------------------------------------------------##
 # Export Variables
 function exports() {
     # Export KBUILD_COMPILER_STRING
-    export KBUILD_COMPILER_STRING=$($HOME/meteoric/$COMPILER-clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+    export KBUILD_COMPILER_STRING=$($HOME/toolchain/$COMPILER-clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 
     # Export ARCH and SUBARCH
     export ARCH=arm64
@@ -131,7 +131,7 @@ function choices() {
     echo -e "***********************************************$nocol"
 
     # KernelSU
-    read -p "Include KernelSU? If unsure, say N. (Y/N) " KSU_RESP 
+    read -p "Include KernelSU? If unsure, say N. (Y/N) " KSU_RESP
     case $KSU_RESP in
         [yY] )
             fi
@@ -144,13 +144,13 @@ function choices() {
     esac
 
     # Clean build
-    read -p "Do you want to do a clean build? If unsure, say N. (Y/N) " CLEAN_RESP 
+    read -p "Do you want to do a clean build? If unsure, say N. (Y/N) " CLEAN_RESP
     case $CLEAN_RESP in
         [yY] )
             make O=out clean && make O=out mrproper
             ;;
     esac
-    
+
     # Interrupt detected
     if [ $SIGINT_DETECT -eq 1 ]; then
         if [ $(grep -c "KSU" arch/arm64/configs/$DEFCONFIG) -ne 0 ]; then
@@ -165,7 +165,7 @@ function choices() {
 ##----------------------------------------------------------##
 # Compilation process
 function compile() {
-    # Make kernel	
+    # Make kernel
     make O=out CC=clang ARCH=arm64 $DEFCONFIG $KSU_CONFIG savedefconfig
     make -kj$(nproc --all) O=out \
     ARCH=arm64 \
@@ -186,10 +186,10 @@ function compile() {
         sed -i 's/CONFIG_KSU=y/# CONFIG_KSU is not set/g' out/.config
         sed -i '/CONFIG_KSU=y/d' out/defconfig
         sed -i "s/-FixeQ-$VERSION-KSU/-FixeQ/" out/defconfig out/.config arch/arm64/configs/$DEFCONFIG
-        
+
         if [ $(grep -c "# KernelSU" arch/arm64/configs/$DEFCONFIG) -eq 1 ]; then
             sed -i 's/CONFIG_KSU=y/# CONFIG_KSU is not set/g' arch/arm64/configs/$DEFCONFIG
-        else   
+        else
             sed -i '/CONFIG_KSU=y/d' arch/arm64/configs/$DEFCONFIG
         fi
     else
@@ -197,7 +197,7 @@ function compile() {
     fi
 
     # Verify build
-    if [ $(grep -c "Error 2" out/error.log) -ne 0 ] || [ $SIGINT_DETECT -eq 1 ]; then 
+    if [ $(grep -c "Error 2" out/error.log) -ne 0 ] || [ $SIGINT_DETECT -eq 1 ]; then
         echo ""
         echo -e "$red***********************************************"
         echo    "           KERNEL COMPILATION FAILED           "
@@ -206,7 +206,7 @@ function compile() {
     else
         echo -e "$green***********************************************"
         echo    "          KERNEL COMPILATION FINISHED          "
-        echo -e "***********************************************$nocol"  
+        echo -e "***********************************************$nocol"
     fi
 }
 ##----------------------------------------------------------##
@@ -240,13 +240,13 @@ function zipping() {
         sha1sum out/$FINAL_ZIP
 
         # Github release
-        read -p "Do you want to do a github release? If unsure, say N. (Y/N) " GIT_RESP 
+        read -p "Do you want to do a github release? If unsure, say N. (Y/N) " GIT_RESP
         case $GIT_RESP in
             [yY] )
                 gh release create $VERSION out/$FINAL_ZIP --repo $RELEASE_REPO --title Meteoric-$VERSION
                 ;;
             *)
-                read -p "Do you want to upload files to the current github release? If unsure, say N. (Y/N) " UPLOAD_RESP 
+                read -p "Do you want to upload files to the current github release? If unsure, say N. (Y/N) " UPLOAD_RESP
                 case $UPLOAD_RESP in
                     [yY] )
                         gh release upload $VERSION out/$FINAL_ZIP --repo $RELEASE_REPO
