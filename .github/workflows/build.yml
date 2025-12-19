@@ -265,7 +265,7 @@ jobs:
       - name: Configure TCP Congestion Control
         run: |
           cd "$CONFIG"
-          echo "# BBR TCP Congestion Control" >> "${{ env.DEFCONFIG }}"
+          echo "# TCP Congestion Control" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_TCP_CONG_ADVANCED=y" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_TCP_CONG_BBR=y" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_NET_SCH_FQ=y" >> "${{ env.DEFCONFIG }}"
@@ -535,7 +535,7 @@ jobs:
         uses: actions/cache@v5.0.1
         with:
           path: ./$CONFIG/common/out
-          key: kernel-out-${{ hashFiles('**/build.yml') }}
+          key: kernel-out-${{ hashFiles('.github/workflows/build.yml') }}
           restore-keys: |
             kernel-out-
 
@@ -556,7 +556,7 @@ jobs:
         uses: actions/cache@v5.0.1
         with:
           path: ./$CONFIG/common/out
-          key: kernel-out-${{ hashFiles('**/build.yml') }}
+          key: kernel-out-${{ hashFiles('.github/workflows/build.yml') }}
           restore-keys: |
             kernel-out-
 
