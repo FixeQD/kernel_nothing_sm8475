@@ -431,6 +431,48 @@ jobs:
           echo "# System control interface" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_PROC_SYSCTL=y" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_SYSVIPC_SYSCTL=y" >> "${{ env.DEFCONFIG }}"
+
+      - name: Configure Performance and Security Optimizations
+        run: |
+          cd "$CONFIG"
+
+          # CPU and Scheduling
+          echo "CONFIG_SCHED_AUTOGROUP=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_HZ=300" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_NO_HZ_FULL=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_SCHEDUTIL=y" >> "${{ env.DEFCONFIG }}"
+
+          # I/O Schedulers
+          echo "CONFIG_MQ_IOSCHED_DEADLINE=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_MQ_IOSCHED_KYBER=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_BFQ_GROUP_IOSCHED=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_BLK_DEV_THROTTLING=y" >> "${{ env.DEFCONFIG }}"
+
+          # Memory Management
+          echo "CONFIG_ZRAM=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_ZSWAP=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_FRONTSWAP=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_COMPACTION=y" >> "${{ env.DEFCONFIG }}"
+
+          # Networking
+          echo "CONFIG_NET_SCH_FQ_CODEL=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_TCP_CONG_BBR2=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_IPV6_ROUTER_PREF=y" >> "${{ env.DEFCONFIG }}"
+
+          # Security
+          echo "CONFIG_HARDENED_USERCOPY=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_FORTIFY_SOURCE=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_STACKPROTECTOR_STRONG=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_VMAP_STACK=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_RANDOMIZE_BASE=y" >> "${{ env.DEFCONFIG }}"
+
+          # Multimedia/GPU
+          echo "CONFIG_DRM_PANEL=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_DRM_MSM=y" >> "${{ env.DEFCONFIG }}"
+
+          # Android-specific
+          echo "CONFIG_ANDROID_BINDERFS=y" >> "${{ env.DEFCONFIG }}"
+          echo "CONFIG_ANDROID_BINDER_IPC=y" >> "${{ env.DEFCONFIG }}"
       # ===== END EXTRA CONFIGURATION PATCH =====
       - name: Change Kernel Name
         run: |
