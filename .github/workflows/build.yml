@@ -9,15 +9,15 @@ on:
       os_patch_level:
         required: false
         type: string
-        default: 'lts'
+        default: "lts"
       revision:
         required: false
         type: string
-        default: 'r1'
+        default: "r1"
       sub_level:
         required: false
         type: string
-        default: 'X'
+        default: "X"
 
 jobs:
   build-nothing-kernel:
@@ -432,7 +432,6 @@ jobs:
           echo "CONFIG_PROC_SYSCTL=y" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_SYSVIPC_SYSCTL=y" >> "${{ env.DEFCONFIG }}"
       # ===== END EXTRA CONFIGURATION PATCH =====
-
       - name: Change Kernel Name
         run: |
           cd "$CONFIG"
@@ -442,13 +441,13 @@ jobs:
           echo "Build timestamp: $BUILD_TIMESTAMP"
 
           perl -pi -e 's/-dirty//' ./common/scripts/setlocalversion
-          
+
           #Set Kernel Name for Nothing Phone Android 12 5.10 (make build)
           #perl -i -0777 -pe 's/(.*)echo "\$res"/$1echo "\$res-FixeQ"/s' ./common/scripts/setlocalversion
 
           #Set UTS_VERSION with the consistent build timestamp
-          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1 SMP PREEMPT $BUILD_TIMESTAMP\"}" ./common/scripts/mkc[...]
-          
+          perl -pi -e "s{UTS_VERSION=\"\\\$\(echo \\\$UTS_VERSION \\\$CONFIG_FLAGS \\\$TIMESTAMP \| cut -b -\\\$UTS_LEN\)\"}{UTS_VERSION=\"#1-FixeQ SMP PREEMPT $BUILD_TIMESTAMP\"}" ./common/scripts/mkcompile_h
+
           #Set build-timestamp with the same consistent timestamp
           perl -pi -e "s/build-timestamp = \\\$\(or \\\$\(KBUILD_BUILD_TIMESTAMP\), \\\$\(build-timestamp-auto\)\)/build-timestamp = \"$BUILD_TIMESTAMP\"/" ./common/init/Makefile
 
