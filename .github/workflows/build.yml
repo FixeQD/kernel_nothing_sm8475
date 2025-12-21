@@ -460,9 +460,6 @@ jobs:
           echo "CONFIG_STACKPROTECTOR_STRONG=y" >> "${{ env.DEFCONFIG }}"
           echo "CONFIG_VMAP_STACK=y" >> "${{ env.DEFCONFIG }}"
 
-          # Multimedia/GPU
-          echo "CONFIG_DRM_PANEL=y" >> "${{ env.DEFCONFIG }}"
-          echo "CONFIG_DRM_MSM=y" >> "${{ env.DEFCONFIG }}"
       # ===== END EXTRA CONFIGURATION PATCH =====
       - name: Change Kernel Name
         run: |
